@@ -74,13 +74,13 @@ DSH 的 agent 本来只能靠 `web_fetch` 拿静态 HTML，遇到需要登录、
 **方式二：git 仓库地址**
 
 ```sh
-dsh plugin --profile <你的 profile> add github:yook0ng/dsh-whale-browser
+dsh plugin --profile web add github:yook0ng/dsh-whale-browser
 ```
 
 **方式三：本地目录（开发调试）**
 
 ```sh
-dsh plugin --profile <你的 profile> add link:/绝对路径/dsh-whale-browser
+dsh plugin --profile web add link:dsh-whale-browser
 ```
 
 配置改在 `cordis.patch.yml` 的 `config` 段（见下表）。**改完代码必须重启应用**才会加载新的模块代际。
