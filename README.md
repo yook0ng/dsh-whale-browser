@@ -106,12 +106,7 @@ dsh plugin --profile web add link:dsh-whale-browser
 | `liveView` / `liveViewPort` | `true` / `0` | 127.0.0.1 上的实时围观页，端口 0 = 随机 |
 | `closeOnUnload` | `false` | 插件卸载时是否顺手关掉浏览器 |
 
----
 
-## 围观页
-
-插件在 `http://127.0.0.1:<随机端口>/` 上开一个小页面：实时画面 + 最近 40 条动作流水。
-地址见 `browser_status` 输出——可以直接贴在 DSH 侧边栏的浏览器标签里，一边看模型操作一边干活。
 
 ---
 
