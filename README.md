@@ -141,7 +141,7 @@ dsh plugin --profile web add link:dsh-whale-browser
 
 因此本插件改用生态里给 browser-use 预留的正规位置：**独占 provider 槽位 + 自己驱动一个真实 Chromium**。
 登录由用户在自己的窗口里完成一次（profile 持久化，比侧边栏 guest 的内存分区还稳），
-模型的每一次操作仍然会逐次申请权限。
+模型的每一次操作仍然逐次申请权限。
 
 ---
 
