@@ -1,0 +1,57 @@
+{
+  "name": "dsh-whale-browser",
+  "version": "1.0.1",
+  "description": "给小鲸鱼一双手：零依赖 CDP 直驱一个专用 Chromium，让 agent 像人一样读网页、点按钮、填表单、滚动、截图；每次操作先经用户授权，密码由用户自己输入。",
+  "type": "module",
+  "license": "MIT",
+  "icon": "icon.svg",
+  "main": "index.js",
+  "author": "Junze Wu (https://github.com/yook0ng)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yook0ng/dsh-whale-browser.git"
+  },
+  "homepage": "https://github.com/yook0ng/dsh-whale-browser#readme",
+  "bugs": {
+    "url": "https://github.com/yook0ng/dsh-whale-browser/issues"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "plugin",
+    "browser-use",
+    "computer-use",
+    "cdp",
+    "chrome-devtools-protocol",
+    "browser-automation",
+    "automation"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dsh": {
+    "engines": {
+      "dsh": ">=0.2.0-rc.2"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

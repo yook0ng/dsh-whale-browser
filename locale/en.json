@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Whale Browser",
+    "description": "Drives a dedicated Chromium with real mouse and keyboard input: read pages, click, fill forms, screenshot. Every action asks you first; passwords stay yours."
+  }
+}

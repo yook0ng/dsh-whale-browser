@@ -1,0 +1,30 @@
+# dsh-whale-browser bundle patch —— 小鲸鱼的浏览器（browser-use provider）。
+#
+# 这是一个纯 Host 插件：它自己独占声明 browser-use provider 槽位
+# （ctx.browserUse.register），不接受第二个浏览器 provider 同时生效。
+# 它不修改任何既有插件的配置，也不占用任何 Client 槽位。
+- insert:
+    - id: whale-browser
+      name: 'dsh-whale-browser'
+      config:
+        # 'every'（默认，每次操作都问）| 'per-origin'（每个站点每类操作问一次）| 'session'（本会话问一次）
+        approval: every
+        # 浏览器：留空自动探测 Edge / Chrome
+        browserPath: ''
+        headless: false
+        # 专用用户数据目录：登录态只存在这里，不动你日常浏览器的 profile
+        profileDir: ''
+        width: 1280
+        height: 900
+        maxTextChars: 12000
+        maxElements: 150
+        # 只允许在这些主机上操作（留空 = 不限制）；blockedHosts 永远拒绝
+        allowHosts: []
+        blockedHosts: []
+        # 独占 browser-use provider 槽位；与官方实验性 provider 互斥
+        claimExclusiveSlot: true
+        # 127.0.0.1 上的实时围观页（可在 DSH 侧边栏浏览器里打开）
+        liveView: true
+        liveViewPort: 0
+        # 插件卸载时是否顺手关掉浏览器（false = 保留窗口和登录态）
+        closeOnUnload: false
