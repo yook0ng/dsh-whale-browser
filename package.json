@@ -1,6 +1,6 @@
 {
   "name": "dsh-whale-browser",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "给小鲸鱼一双手：零依赖 CDP 直驱一个专用 Chromium，让 agent 像人一样读网页、点按钮、填表单、滚动、截图；每次操作先经用户授权，密码由用户自己输入。",
   "type": "module",
   "license": "MIT",

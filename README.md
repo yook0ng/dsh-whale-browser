@@ -51,14 +51,24 @@ DSH 的 agent 本来只能靠 `web_fetch` 拿静态 HTML，遇到需要登录、
 ## 权限与安全模型
 
 1. **每次操作都先问**（默认 `approval: every`）。工具在获得允许前不会碰页面；被拒绝就停下来说明原因。
+   授权提示会带上**当前站点**、元素 ref、输入内容（截断显示）以及是否会按回车提交。
 2. **密码永远是你的事**。对 `type=password` 的输入请求会被硬拒绝，模型会停下来请用户接手；
    元素表里也会把密码框标成 🔒。
 3. **危险动作二次确认**。点击「删除/移除/注销」「付款/下单/转账/订阅」这类元素时，
    除了工具级授权，还会再发一次明确说明的确认请求；拿不到确认就拒绝执行。
-4. **只碰自己启动的浏览器**。专用 `--user-data-dir`（默认 `~/.dsh/whale-browser/profile`）与随机调试端口，
-   不读取、不附着、不关闭你日常使用的 Chrome/Edge。
-5. **主机名单**。`blockedHosts` 永远拒绝；`allowHosts` 非空时只允许名单内主机。
-6. **独占槽位**。`ctx.browserUse.register('whale-chromium')`——与官方实验性 browser-use provider 天然互斥，
+   按坐标点击（`x`/`y`）也会先用 `document.elementFromPoint` 识别目标元素，再走同一套风险判定。
+4. **授权缓存绑站点，不绑标签页**。`per-origin` 以 URL 的 origin 为键：同一标签页跳到别的站点会重新询问；
+   `session` 每个会话只问一次（不按标签页或读写类别拆分）。只有执行成功、且执行后仍是同一 origin 才会记录授权，
+   防止“点一下跳到新站，旧授权被记到新站名下”。
+5. **网页内容不受信**。页面正文、元素名、弹窗、截图里的任何指令都只是数据，模型不会执行；
+   一切以用户的要求和判断为准（这条写进了给模型的系统提示，也在工具说明里重申）。
+6. **围观页不给网页内容执行权**。动作流水用 `textContent` 渲染（不再拼 `innerHTML`），脚本单独走 `/app.js`，
+   页面带 CSP（`script-src 'self'`、`default-src 'none'`）与 `nosniff`——网页里带 HTML 的元素名/输入文本只会当纯文本显示。
+7. **只碰自己启动的浏览器**。专用 `--user-data-dir`（默认 `~/.dsh/whale-browser/profile`）与随机调试端口，
+   不读取、不附着、不关闭你日常使用的 Chrome/Edge。浏览器子进程启动即 `unref()`，插件卸载/宿主退出时不会把它
+   留在事件循环里（桌面更新器只等 10 秒，这一点很关键）；`browser_close` 关闭失败会明确报错，而不是谎报成功。
+8. **主机名单**。`blockedHosts` 永远拒绝；`allowHosts` 非空时只允许名单内主机。
+9. **独占槽位**。`ctx.browserUse.register('whale-chromium')`——与官方实验性 browser-use provider 天然互斥，
    不会两套浏览器工具抢同一个页面。
 7. **零第三方依赖**，不注册 Client 槽位，不读写其他插件的 DOM 或配置。
 
@@ -94,7 +104,7 @@ dsh plugin --profile web add link:dsh-whale-browser
 
 | 键 | 默认 | 说明 |
 |---|---|---|
-| `approval` | `every` | `every` 每次问 / `per-origin` 每站点每类操作问一次 / `session` 本会话问一次 |
+| `approval` | `every` | `every` 每次问 / `per-origin` 每个站点问一次（跨站跳转重新问） / `session` 每个会话问一次 |
 | `browserPath` | 空 | 留空自动探测 Chrome / Edge |
 | `headless` | `false` | `true` 无头运行（看不到窗口） |
 | `profileDir` | `~/.dsh/whale-browser/profile` | 专用用户数据目录：登录态只存在这里 |
@@ -104,9 +114,16 @@ dsh plugin --profile web add link:dsh-whale-browser
 | `allowHosts` / `blockedHosts` | `[]` | 主机白/黑名单 |
 | `claimExclusiveSlot` | `true` | 是否独占 browser-use provider 槽位 |
 | `liveView` / `liveViewPort` | `true` / `0` | 127.0.0.1 上的实时围观页，端口 0 = 随机 |
-| `closeOnUnload` | `false` | 插件卸载时是否顺手关掉浏览器 |
+| `closeOnUnload` | `false` | 插件卸载时是否顺手关掉浏览器。不论开关，卸载都会断开 CDP 并释放事件循环（子进程 unref），不会阻塞宿主退出 |
 
+---
 
+## 围观页
+
+插件在 `http://127.0.0.1:<随机端口>/` 上开一个小页面：实时画面 + 最近 40 条动作流水。
+地址见 `browser_status` 输出——可以直接贴在 DSH 侧边栏的浏览器标签里，一边看模型操作一边干活。
+页面脚本单独走 `/app.js`，动作流水只用 `textContent` 渲染；响应头带 `Content-Security-Policy`
+（`default-src 'none'; script-src 'self'`）与 `X-Content-Type-Options: nosniff`，网页带来的任何 HTML 都不会在围观页执行。
 
 ---
 
